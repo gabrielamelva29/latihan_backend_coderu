@@ -74,9 +74,9 @@ const fs = require('fs');
       let indexProvince
       // provinceList.push(newData)
 
-      for(let province of provinceList){
-        if(provinceList[province.id]==idProv){
-          indexProvince=province
+      for(let index=0; index<provinceList.length; index++){
+        if(provinceList[index].id==idProv){
+          indexProvince=index
           break
           // return res.status(200).send(`Deleted province with id is ${id}`)
         }
@@ -258,8 +258,8 @@ const fs = require('fs');
 
   });
 
-   //DELETE REGENCYBYID
-   app.delete('/regency/:id', (req, res) => {
+    //DELETE REGENCYBYID
+  app.delete('/regency/:id', (req, res) => {
     let idReg=req.params.id
  
     fs.readFile('./regency.json', 'utf8', (err, data) => {
@@ -273,9 +273,9 @@ const fs = require('fs');
       let indexRegency
       // provinceList.push(newData)
 
-      for(let regency of regencyList){
-        if(regencyList[regency.id]==idReg){
-          indexRegency=regency
+      for(let index=0; index<regencyList.length; index++){
+        if(regencyList[index].id==idReg){
+          indexRegency=index
           break
           // return res.status(200).send(`Deleted province with id is ${id}`)
         }
@@ -287,7 +287,7 @@ const fs = require('fs');
           console.error(err);
           res.status(500).send("Internal Server Error")
         }
-        return res.status(200).send("Success to delete province")
+        return res.status(200).send("Success to add delete province")
       });
 
       res.status(404).send("Data not found")
@@ -327,63 +327,73 @@ const fs = require('fs');
 
       let regencyList=JSON.parse(data)
       let regencyByProvinceId = []
+      console.log(data)
 
       for(let regency of regencyList){
         if(regency.province_id==id){
           regencyByProvinceId.push(regency)
-          // return res.status(200).send(province)
+        
         }
       }
+
+      if(regencyByProvinceId.length>0){
+        return res.status(200).send(regencyByProvinceId)
+      }   
     return res.status(400).send("Data not found")
     });
   });
 
   // Get API Regency By Province Name
-  app.get('/RegByProvName/:name', (req, res) => {
+  app.get('/regency/RegByProvName/:id', (req, res) => {
     
-    let nameProv=req.body.name
-    fs.readFile('./regency.json', 'utf8', (err, data) => {
+    let nameProv=req.params.id
+    let idProv
+    fs.readFile('./province.json', 'utf8', (err, data) => {
       if (err) {
         console.error(err);
         res.status(500).send("Internal Server Error")
         return;
       }
 
-      fs.readFile('./province.json', 'utf8', (err, dataRegency) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Internal Server Error")
-          return;
-        }
+      let provinceList=JSON.parse(data)    
 
-        provinceList=JSON.parse(data)
-
-        let idProv
-        for(let province of provinceList){
-          if(province.name==nameProv){
-            idProv==province.id
-            break
-          }
-        }
-
-
-      let regencyByProvinceId = []
-      let regencyList=JSON.parse(dataRegency)
-      for(let regency of regencyList){
-        if(regency.province_id==idProv){
-          regencyByProvinceId.push(regency)
-          // return res.status(200).send(province)
+      for(let province of provinceList){
+        if(province.name==nameProv){
+          idProv=province.id
         }
       }
-    return res.status(400).send("Data not found")
     });
-  });
-});
+
+    fs.readFile('./regency.json', 'utf-8', (err, data)=>{
+      if(err){
+        console.error(err);
+        res.status(500).send("Internal Server Error")
+        return
+      }
+
+      let regencyList=JSON.parse(data)
+      let newData=[]
+      for(let regency of regencyList){
+        if(regency.province_id==idProv){
+          newData.push(regency)
+        }
+      }
+
+      if(newData.length>0){
+        return res.status(200).send(newData)
+      }
+
+      return res.status(400).send("Data not found")
+    });      
+    });
+
 
 // Get API Province Name by Regency Name
-app.get('/ProvByRegName/:name', (req, res) => {
+app.get('/province/ProvByRegName/:id', (req, res) => {
     
-  let nameReg=req.body.name
+  let nameReg=req.params.id
+  // let regencyList=[]
+  let provinceId
   fs.readFile('./regency.json', 'utf8', (err, data) => {
     if (err) {
       console.error(err);
@@ -391,26 +401,66 @@ app.get('/ProvByRegName/:name', (req, res) => {
       return;
     }    
       
-    regencyList=JSON.parse(dataRegency)
-
-      let idProv
+   regencyList=JSON.parse(data)
       for(let regency of regencyList){
-        if(regency.name==nameProv){
-          idProv==regency.province_id
+        if(regency.name==nameReg){
+          provinceId=regency.province_id
         }
+      }
+    });
 
         fs.readFile('./province.json', 'utf8', (err, data) => {
+          if (err) {
+            console.error(err);
+            res.status(500).send("Internal Server Error")
+            return;
+          }
+
           let provinceList=JSON.parse(data)
+          let newProvinces=null 
           for(let province of provinceList){
-            if(province.id==idProv){
-              return res.status(200).send(province.name)
+            if(province.id==provinceId){
+              return res.status(200).send(province)
             }
           }
+
+          res.status(400).send("Data not found")
               
   });
-  }
-});
-});
+  });
+
+
+//////////////revisi=================
+// app.get('province/ProvByRegName/:name', (req, res) => {
+    
+//   let nameReg=req.body.name
+//   fs.readFile('./regency.json', 'utf8', (err, data) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).send("Internal Server Error")
+//       return;
+//     }    
+      
+//     regencyList=JSON.parse(dataRegency)
+
+//       let idProv
+//       for(let regency of regencyList){
+//         if(regency.name==nameProv){
+//           idProv==regency.province_id
+//         }
+
+//         fs.readFile('./province.json', 'utf8', (err, data) => {
+//           let provinceList=JSON.parse(data)
+//           for(let province of provinceList){
+//             if(province.id==idProv){
+//               return res.status(200).send(province.name)
+//             }
+//           }
+              
+//   });
+//   }
+// });
+// });
 
   console.log("App running on port 3000")
   

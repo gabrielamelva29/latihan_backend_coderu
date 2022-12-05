@@ -45,15 +45,8 @@ class Province{
     findRegencyByID(id){
         for(let reg of this.regencies){
             if(reg.id==id){
-                // for(let province of this.provinces){
-                //     if(province.id==reg.province_id){
-                //         return true
-                //     }
-                // }
-                return true
-             
-            }
-            
+                return reg            
+            }           
         }
         return false
     }
@@ -117,11 +110,8 @@ class Location{
 
         findProvinceByRegencyID(id){
             for(let prov of this.provinceList){                
-                if(prov.findRegencyByID(id) && prov.id==prov.province_id){
+                if(prov.findRegencyByID(id)){
                         console.log(prov.name)
-                }
-                else{
-                    console.log("data tidak ditemukan")
                 }
                 
             }
