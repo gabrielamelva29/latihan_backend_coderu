@@ -39,6 +39,22 @@ const getAllProvince = async (req, res) => {
         })
 };
 
+const getProvinceByID = async (req, res) => {
+    const id = req.params.id
+
+    Province.findOne({where:{id:id}})
+        .then(provinces => {
+            res.status(200).json({
+                message: "Provinces List",
+                data: provinces,
+            });
+        }).catch(e => {
+            res.status(500).json({
+                message: "Internal Server Error",
+            });
+        })
+};
+
 const updateProvince = async (req, res) => {
     const body = req.body
     const id = req.params.id
@@ -90,6 +106,7 @@ const deleteProvince = async (req, res) => {
 module.exports = {
     createProvince,
     getAllProvince,
+    getProvinceByID,
     updateProvince,
     deleteProvince
 }

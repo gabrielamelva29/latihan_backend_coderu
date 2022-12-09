@@ -40,6 +40,22 @@ const getAllRegency = async (req, res) => {
         })
 };
 
+const getRegencyByID = async (req, res) => {
+    const id = req.params.id
+
+    Regency.findOne({where:{id:id}})
+        .then(regencies => {
+            res.status(200).json({
+                message: "Regencys List",
+                data: regencies,
+            });
+        }).catch(e => {
+            res.status(500).json({
+                message: "Internal Server Error",
+            });
+        })
+};
+
 const updateRegency = async (req, res) => {
     const body = req.body
     const id = req.params.id
@@ -92,6 +108,7 @@ const deleteRegency = async (req, res) => {
 module.exports = {
     createRegency,
     getAllRegency,
+    getRegencyByID,
     updateRegency,
     deleteRegency
 }
