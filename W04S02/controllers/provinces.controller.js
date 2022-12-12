@@ -1,6 +1,7 @@
-const fs = require('fs')
+const fs = require('fs');
+const { Model } = require('sequelize');
 const db = require("../config/db");
-const { Province } = require('../models')
+const { Province, Regency } = require('../models')
 
 const createProvince = async (req, res) => {
     const body = req.body;
@@ -26,7 +27,14 @@ const createProvince = async (req, res) => {
 
 const getAllProvince = async (req, res) => {
 
-    Province.findAll({})
+    Province.findAll({
+        include:[
+            {
+                model:Regency,
+                as:"regencies"
+            }
+        ]
+    })
         .then(provinces => {
             res.status(200).json({
                 message: "Provinces List",

@@ -1,6 +1,6 @@
 const fs = require('fs')
 const db = require("../config/db");
-const { Regency } = require('../models')
+const { Regency, Province } = require('../models')
 
 const createRegency = async (req, res) => {
     const body = req.body;
@@ -27,7 +27,12 @@ const createRegency = async (req, res) => {
 
 const getAllRegency = async (req, res) => {
 
-    Regency.findAll({})
+    Regency.findAll({include:[
+        {
+            model:Province,
+            as:"province"
+        }
+    ]})
         .then(regencies => {
             res.status(200).json({
                 message: "Regencys List",
